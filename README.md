@@ -13,6 +13,12 @@ Total incentive = 10 SGD instant incentive + add-on incentive
 If Toss 2 is selected, the add-on incentive equals the entered value and displays the delay.  
 If Toss 2 is not selected, the add-on incentive is 0 SGD.
 
+## Public link
+
+After GitHub Pages deployment finishes, the public website link is:
+
+https://lxinweixl.github.io/incentive-toss/
+
 ## Run locally
 
 ```bash
