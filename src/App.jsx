@@ -8,7 +8,7 @@ export default function App() {
   const [trialHistory, setTrialHistory] = useState([]);
 
   const [value, setValue] = useState("30");
-  const [delay, setDelay] = useState("7 days");
+  const [delay, setDelay] = useState("7");
   const [chance, setChance] = useState("50");
   const [outcome, setOutcome] = useState(null);
   const [outcomeHistory, setOutcomeHistory] = useState([]);
@@ -42,7 +42,7 @@ export default function App() {
     const result = {
       isSelected,
       value: value.trim() || "0",
-      delay: delay.trim() || "No delay entered",
+      delay: delay.trim() || "0",
       chance: chanceNumber,
       draw: randomDraw.toFixed(2),
       time: new Date().toLocaleTimeString([], {
@@ -61,6 +61,9 @@ export default function App() {
     setTrialHistory([]);
     setOutcome(null);
     setOutcomeHistory([]);
+    setValue("");
+    setDelay("");
+    setChance("");
   };
 
   return (
@@ -72,7 +75,7 @@ export default function App() {
             <h1>Two Random Tosses</h1>
             <p className="subtitle">
               First, randomly select one trial from 1 to 180. Then enter a value,
-              delay, and chance to randomly determine whether the value-delay
+              delay in days, and chance to randomly determine whether the value-delay
               outcome is selected.
             </p>
           </div>
@@ -145,8 +148,14 @@ export default function App() {
               </label>
 
               <label>
-                <span><Clock size={16} /> Delay</span>
-                <input value={delay} onChange={(e) => setDelay(e.target.value)} placeholder="e.g., 7 days" />
+                <span><Clock size={16} /> Delay (days)</span>
+                <input
+                  type="number"
+                  min="0"
+                  value={delay}
+                  onChange={(e) => setDelay(e.target.value)}
+                  placeholder="e.g., 7"
+                />
               </label>
 
               <label>
@@ -165,7 +174,7 @@ export default function App() {
             <div className="setting-box">
               Current setting: there is a <strong>{chanceNumber}%</strong> chance
               that the participant receives <strong>{value || "0"}</strong> after{" "}
-              <strong>{delay || "the entered delay"}</strong>.
+              <strong>{delay || "0"} days</strong>.
             </div>
 
             <button onClick={tossOutcome} className="button button-primary full">
@@ -200,7 +209,7 @@ export default function App() {
                     <div key={`${item.time}-${index}`} className="list-item">
                       <span>
                         {item.isSelected
-                          ? `Selected: ${item.value} after ${item.delay}`
+                          ? `Selected: ${item.value} after ${item.delay} days`
                           : "Not selected"}
                       </span>
                       <small>Chance {item.chance}% · Draw {item.draw}% · {item.time}</small>
@@ -226,7 +235,7 @@ export default function App() {
                 label="Add-on incentive"
                 value={
                   outcome
-                    ? `${addOnIncentive} SGD${outcome.isSelected ? ` after ${outcome.delay}` : ""}`
+                    ? `${addOnIncentive} SGD${outcome.isSelected ? ` after ${outcome.delay} days` : ""}`
                     : "Waiting for Toss 2"
                 }
               />
