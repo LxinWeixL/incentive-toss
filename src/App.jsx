@@ -74,9 +74,9 @@ export default function App() {
             <p className="eyebrow">Interactive Random Toss Tool</p>
             <h1>Two Random Tosses</h1>
             <p className="subtitle">
-              First, randomly select one trial from 1 to 180. Then enter a value,
-              delay in days, and chance to randomly determine whether the value-delay
-              outcome is selected.
+              First, randomly select one trial from 1 to 180. Then enter a value
+              in SGD, delay in days, and chance to randomly determine whether the
+              value-delay outcome is selected.
             </p>
           </div>
 
@@ -143,8 +143,14 @@ export default function App() {
 
             <div className="input-grid">
               <label>
-                <span><Trophy size={16} /> Value</span>
-                <input value={value} onChange={(e) => setValue(e.target.value)} placeholder="e.g., 30" />
+                <span><Trophy size={16} /> Value (SGD)</span>
+                <input
+                  type="number"
+                  min="0"
+                  value={value}
+                  onChange={(e) => setValue(e.target.value)}
+                  placeholder="e.g., 30"
+                />
               </label>
 
               <label>
@@ -173,7 +179,7 @@ export default function App() {
 
             <div className="setting-box">
               Current setting: there is a <strong>{chanceNumber}%</strong> chance
-              that the participant receives <strong>{value || "0"}</strong> after{" "}
+              that the participant receives <strong>{value || "0"} SGD</strong> after{" "}
               <strong>{delay || "0"} days</strong>.
             </div>
 
@@ -209,7 +215,7 @@ export default function App() {
                     <div key={`${item.time}-${index}`} className="list-item">
                       <span>
                         {item.isSelected
-                          ? `Selected: ${item.value} after ${item.delay} days`
+                          ? `Selected: ${item.value} SGD after ${item.delay} days`
                           : "Not selected"}
                       </span>
                       <small>Chance {item.chance}% · Draw {item.draw}% · {item.time}</small>
@@ -253,7 +259,7 @@ export default function App() {
             </motion.div>
 
             <div className="setting-box">
-              If Toss 2 is selected, the add-on incentive equals the entered value.
+              If Toss 2 is selected, the add-on incentive equals the entered value in SGD.
               If Toss 2 is not selected, the add-on incentive is 0 SGD.
             </div>
           </section>
