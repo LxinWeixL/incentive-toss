@@ -4,9 +4,220 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Two Random Tosses</title>
+    <style>
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #0f172a;
+        background: linear-gradient(135deg, #f8fafc, #ffffff, #f1f5f9);
+      }
+      button, input { font: inherit; }
+      .page { min-height: 100vh; padding: 32px; }
+      .container { max-width: 1152px; margin: 0 auto; }
+      .header { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 32px; }
+      .eyebrow { margin: 0 0 8px; font-size: 14px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: #64748b; }
+      h1 { margin: 0; font-size: clamp(36px, 6vw, 56px); line-height: 1; }
+      .subtitle { max-width: 720px; margin: 16px 0 0; color: #475569; line-height: 1.7; }
+      .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+      .card { background: white; border: 1px solid #e2e8f0; border-radius: 28px; padding: 32px; box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06); }
+      .total-card { grid-column: 1 / -1; }
+      .card-title { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+      .icon-box { display: grid; place-items: center; width: 52px; height: 52px; border-radius: 18px; background: #0f172a; color: white; font-size: 24px; }
+      .card-title h2 { margin: 0; font-size: 24px; }
+      .card-title p { margin: 4px 0 0; color: #64748b; font-size: 14px; }
+      .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; border-radius: 18px; padding: 0 20px; cursor: pointer; border: 1px solid transparent; }
+      .button-primary { background: #0f172a; color: white; }
+      .button-outline { background: white; border-color: #cbd5e1; color: #0f172a; }
+      .full { width: 100%; }
+      .display { min-height: 190px; display: flex; align-items: center; justify-content: center; border-radius: 28px; border: 1px dashed #cbd5e1; background: #f8fafc; margin-bottom: 24px; padding: 24px; text-align: center; }
+      .result-display { min-height: 160px; border-style: solid; background: white; margin-top: 24px; }
+      .muted { color: #64748b; }
+      .small-label { margin: 0; font-size: 13px; font-weight: 800; letter-spacing: 0.2em; text-transform: uppercase; }
+      .big-number { margin: 8px 0 0; font-size: 80px; font-weight: 950; line-height: 1; }
+      .input-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+      label { display: block; }
+      label span { display: flex; align-items: center; gap: 8px; color: #475569; font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+      input { width: 100%; border: 1px solid #e2e8f0; border-radius: 18px; background: white; padding: 12px 16px; outline: none; }
+      input:focus { border-color: #94a3b8; box-shadow: 0 0 0 4px #f1f5f9; }
+      .setting-box { margin-top: 20px; border-radius: 18px; background: #f8fafc; color: #475569; padding: 16px; line-height: 1.6; font-size: 14px; }
+      .toss-result { width: 100%; border-radius: 20px; padding: 28px; text-align: center; }
+      .selected { background: #ecfdf5; color: #064e3b; }
+      .not-selected { background: #fff1f2; color: #881337; }
+      .result-text { margin: 12px 0 0; font-size: 40px; font-weight: 950; }
+      .history { margin-top: 24px; }
+      .history h3 { color: #475569; font-size: 14px; margin: 0 0 12px; }
+      .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+      .chip { border-radius: 999px; background: #f1f5f9; color: #334155; padding: 6px 12px; font-size: 14px; font-weight: 700; }
+      .list { display: grid; gap: 8px; }
+      .list-item { display: flex; justify-content: space-between; gap: 12px; border-radius: 18px; background: #f8fafc; padding: 12px 16px; font-size: 14px; }
+      .list-item strong { font-weight: 700; }
+      .list-item small { color: #64748b; }
+      .summary-grid { display: grid; gap: 12px; }
+      .result-box { border-radius: 18px; background: #f8fafc; padding: 16px; }
+      .result-box p { margin: 0 0 6px; color: #64748b; font-size: 12px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; }
+      .result-box strong { font-size: 18px; }
+      .total-box { margin-top: 24px; border-radius: 28px; background: #0f172a; color: white; padding: 28px; text-align: center; }
+      .total-box .small-label { color: #cbd5e1; }
+      .total-number { margin: 12px 0 0; font-size: 52px; font-weight: 950; }
+      @media (max-width: 900px) {
+        .page { padding: 20px; }
+        .header, .list-item { flex-direction: column; align-items: stretch; }
+        .grid, .input-grid { grid-template-columns: 1fr; }
+        .total-card { grid-column: auto; }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <div class="page">
+      <div class="container">
+        <header class="header">
+          <div>
+            <p class="eyebrow">Interactive Random Toss Tool</p>
+            <h1>Two Random Tosses</h1>
+            <p class="subtitle">First, randomly select one trial from 1 to 180. Then enter a value in SGD, delay in days, and chance to randomly determine whether the value-delay outcome is selected.</p>
+          </div>
+          <button id="resetBtn" class="button button-outline">↻ Reset</button>
+        </header>
+
+        <main class="grid">
+          <section class="card">
+            <div class="card-title"><div class="icon-box">#</div><div><h2>Toss 1</h2><p>Random trial number</p></div></div>
+            <div class="display" id="trialDisplay"><div class="muted">Click the button below to randomly select a trial from 1 to 180.</div></div>
+            <button id="tossTrialBtn" class="button button-primary full">🎲 Toss Trial Number</button>
+            <div class="history" id="trialHistoryBox" style="display:none;"><h3>Recent trial results</h3><div class="chips" id="trialHistory"></div></div>
+          </section>
+
+          <section class="card">
+            <div class="card-title"><div class="icon-box">🏆</div><div><h2>Toss 2</h2><p>Value-delay outcome based on chance</p></div></div>
+            <div class="input-grid">
+              <label><span>🏆 Value (SGD)</span><input id="valueInput" type="number" min="0" value="30" placeholder="e.g., 30"></label>
+              <label><span>⏱ Delay (days)</span><input id="delayInput" type="number" min="0" value="7" placeholder="e.g., 7"></label>
+              <label><span>% Chance (%)</span><input id="chanceInput" type="number" min="0" max="100" value="50" placeholder="0–100"></label>
+            </div>
+            <div class="setting-box" id="settingBox"></div>
+            <button id="tossOutcomeBtn" class="button button-primary full" style="margin-top:20px;">🎲 Toss Value-Delay Outcome</button>
+            <div class="display result-display" id="outcomeDisplay"><div class="muted">Enter the value, delay, and chance, then click the toss button.</div></div>
+            <div class="history" id="outcomeHistoryBox" style="display:none;"><h3>Recent value-delay results</h3><div class="list" id="outcomeHistory"></div></div>
+          </section>
+
+          <section class="card total-card">
+            <div class="card-title"><div class="icon-box">💵</div><div><h2>Total Incentive</h2><p>Instant incentive plus add-on incentive</p></div></div>
+            <div class="summary-grid">
+              <div class="result-box"><p>Instant incentive</p><strong>10 SGD</strong></div>
+              <div class="result-box"><p>Add-on incentive</p><strong id="addOnText">Waiting for Toss 2</strong></div>
+            </div>
+            <div class="total-box"><p class="small-label">Total Amount</p><p class="total-number" id="totalText">10 SGD</p></div>
+            <div class="setting-box">If Toss 2 is selected, the add-on incentive equals the entered value in SGD. If Toss 2 is not selected, the add-on incentive is 0 SGD.</div>
+          </section>
+        </main>
+      </div>
+    </div>
+
+    <script>
+      const instantIncentive = 10;
+      let trialHistory = [];
+      let outcomeHistory = [];
+      let outcome = null;
+
+      const valueInput = document.getElementById('valueInput');
+      const delayInput = document.getElementById('delayInput');
+      const chanceInput = document.getElementById('chanceInput');
+      const settingBox = document.getElementById('settingBox');
+      const trialDisplay = document.getElementById('trialDisplay');
+      const trialHistoryBox = document.getElementById('trialHistoryBox');
+      const trialHistoryEl = document.getElementById('trialHistory');
+      const outcomeDisplay = document.getElementById('outcomeDisplay');
+      const outcomeHistoryBox = document.getElementById('outcomeHistoryBox');
+      const outcomeHistoryEl = document.getElementById('outcomeHistory');
+      const addOnText = document.getElementById('addOnText');
+      const totalText = document.getElementById('totalText');
+
+      function clampChance(raw) {
+        const n = Number(raw);
+        if (Number.isNaN(n)) return 0;
+        return Math.min(100, Math.max(0, n));
+      }
+
+      function updateSetting() {
+        const chance = clampChance(chanceInput.value);
+        const value = valueInput.value || '0';
+        const delay = delayInput.value || '0';
+        settingBox.innerHTML = `Current setting: there is a <strong>${chance}%</strong> chance that the participant receives <strong>${value} SGD</strong> after <strong>${delay} days</strong>.`;
+      }
+
+      function updateTotals() {
+        let addOn = 0;
+        if (outcome && outcome.isSelected) {
+          const parsed = Number(outcome.value);
+          addOn = Number.isNaN(parsed) ? 0 : Math.max(0, parsed);
+        }
+        if (!outcome) {
+          addOnText.textContent = 'Waiting for Toss 2';
+        } else if (outcome.isSelected) {
+          addOnText.textContent = `${addOn} SGD after ${outcome.delay} days`;
+        } else {
+          addOnText.textContent = '0 SGD';
+        }
+        totalText.textContent = `${instantIncentive + addOn} SGD`;
+      }
+
+      function renderTrialHistory() {
+        trialHistoryBox.style.display = trialHistory.length ? 'block' : 'none';
+        trialHistoryEl.innerHTML = trialHistory.map(x => `<span class="chip">${x}</span>`).join('');
+      }
+
+      function renderOutcomeHistory() {
+        outcomeHistoryBox.style.display = outcomeHistory.length ? 'block' : 'none';
+        outcomeHistoryEl.innerHTML = outcomeHistory.map(item => {
+          const main = item.isSelected ? `Selected: ${item.value} SGD after ${item.delay} days` : 'Not selected';
+          return `<div class="list-item"><strong>${main}</strong><small>Chance ${item.chance}% · Draw ${item.draw}% · ${item.time}</small></div>`;
+        }).join('');
+      }
+
+      document.getElementById('tossTrialBtn').addEventListener('click', () => {
+        const result = Math.floor(Math.random() * 180) + 1;
+        trialDisplay.innerHTML = `<div><p class="small-label">Selected Trial</p><p class="big-number">${result}</p></div>`;
+        trialHistory = [result, ...trialHistory].slice(0, 8);
+        renderTrialHistory();
+      });
+
+      document.getElementById('tossOutcomeBtn').addEventListener('click', () => {
+        const chance = clampChance(chanceInput.value);
+        const draw = Math.random() * 100;
+        const isSelected = draw < chance;
+        outcome = {
+          isSelected,
+          value: valueInput.value || '0',
+          delay: delayInput.value || '0',
+          chance,
+          draw: draw.toFixed(2),
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+        };
+        outcomeDisplay.innerHTML = `<div class="toss-result ${isSelected ? 'selected' : 'not-selected'}"><p class="small-label">Toss Result</p><p class="result-text">${isSelected ? 'Selected' : 'Not selected'}</p></div>`;
+        outcomeHistory = [outcome, ...outcomeHistory].slice(0, 8);
+        renderOutcomeHistory();
+        updateTotals();
+      });
+
+      document.getElementById('resetBtn').addEventListener('click', () => {
+        trialHistory = [];
+        outcomeHistory = [];
+        outcome = null;
+        valueInput.value = '';
+        delayInput.value = '';
+        chanceInput.value = '';
+        trialDisplay.innerHTML = '<div class="muted">Click the button below to randomly select a trial from 1 to 180.</div>';
+        outcomeDisplay.innerHTML = '<div class="muted">Enter the value, delay, and chance, then click the toss button.</div>';
+        renderTrialHistory();
+        renderOutcomeHistory();
+        updateSetting();
+        updateTotals();
+      });
+
+      [valueInput, delayInput, chanceInput].forEach(input => input.addEventListener('input', updateSetting));
+      updateSetting();
+      updateTotals();
+    </script>
   </body>
 </html>
